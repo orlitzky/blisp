@@ -8,6 +8,7 @@ set(CMAKE_C_STANDARD 11)
 option(BLISP_BUILD_CLI "Build CLI Tool" OFF)
 option(BLISP_USE_SYSTEM_LIBRARIES "Use system-installed libraries" "${CMAKE_USE_SYSTEM_LIBRARIES}")
 option(COMPILE_TESTS "Compile the tests" OFF)
+option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 
 add_library(libblisp_obj OBJECT
         lib/blisp.c
@@ -30,8 +31,7 @@ endif()
 
 set_property(TARGET libblisp_obj PROPERTY POSITION_INDEPENDENT_CODE 1)
 
-add_library(libblisp SHARED $<TARGET_OBJECTS:libblisp_obj>)
-add_library(libblisp_static STATIC $<TARGET_OBJECTS:libblisp_obj>)
+add_library(libblisp $<TARGET_OBJECTS:libblisp_obj>)
 
 set(BLISP_PUBLIC_HEADERS
     include/blisp.h
@@ -44,20 +44,11 @@ set_target_properties(libblisp PROPERTIES
         PUBLIC_HEADER "${BLISP_PUBLIC_HEADERS}"
         VERSION 0.0.5
         SOVERSION 1
-        LIBRARY_OUTPUT_DIRECTORY "shared"
-        OUTPUT_NAME "blisp")
-
-set_target_properties(libblisp_static PROPERTIES
-        PUBLIC_HEADER "${BLISP_PUBLIC_HEADERS}"
-        VERSION 0.0.5
-        SOVERSION 1
-        ARCHIVE_OUTPUT_DIRECTORY "static"
         OUTPUT_NAME "blisp")
 
 if(BLISP_USE_SYSTEM_LIBRARIES)
     find_package(Libserialport REQUIRED)
     target_link_libraries(libblisp PUBLIC Libserialport::Libserialport)
-    target_link_libraries(libblisp_static PUBLIC Libserialport::Libserialport)
     target_include_directories(libblisp_obj PUBLIC ${Libserialport_INCLUDE_DIRS})
 else()
     if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD")
@@ -70,7 +61,6 @@ else()
 
     if(WIN32)
         target_link_libraries(libblisp PRIVATE Setupapi.lib)
-        target_link_libraries(libblisp_static PRIVATE Setupapi.lib)
         target_compile_definitions(libblisp_obj PRIVATE LIBSERIALPORT_MSBUILD)
         target_sources(libblisp_obj PRIVATE
                 ${CMAKE_SOURCE_DIR}/vendor/libserialport/windows.c)
@@ -89,7 +79,6 @@ else()
     elseif(UNIX AND ${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD")
         target_include_directories(libblisp_obj PRIVATE /usr/local/include/)
         target_link_libraries(libblisp PRIVATE -L/usr/local/lib usb serialport)
-        target_link_libraries(libblisp_static PRIVATE -L/usr/local/lib usb serialport)
     elseif(APPLE)
         target_sources(libblisp_obj PRIVATE
                 ${CMAKE_SOURCE_DIR}/vendor/libserialport/macosx.c)
@@ -104,7 +93,7 @@ else()
 endif()
 
 include(GNUInstallDirs)
-install(TARGETS libblisp libblisp_static
+install(TARGETS libblisp
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}

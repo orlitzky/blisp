@@ -21,7 +21,7 @@ target_include_directories(blisp PRIVATE
 
 target_link_libraries(blisp PRIVATE
         argtable3::argtable3
-        libblisp_static file_parsers)
+        libblisp file_parsers)
 
 if (NOT CMAKE_C_COMPILER_ID MATCHES "MSVC")
   target_compile_options(libblisp_obj PRIVATE -Wall -Wextra -Wpedantic)
