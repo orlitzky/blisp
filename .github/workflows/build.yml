@@ -33,7 +33,7 @@ jobs:
           mkdir build
           cd build
           cmake .. -DBLISP_BUILD_CLI=ON -DCMAKE_BUILD_TYPE=Release
-          cmake --build . --config Release
+          cmake --build . --config Release --verbose
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
@@ -54,7 +54,7 @@ jobs:
           mkdir build
           cd build
           cmake .. -DBLISP_BUILD_CLI=ON -DCMAKE_BUILD_TYPE=Release
-          cmake --build .
+          cmake --build . --verbose
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
@@ -75,7 +75,7 @@ jobs:
           mkdir build
           cd build
           cmake .. -DBLISP_BUILD_CLI=ON -DCMAKE_BUILD_TYPE=Release
-          cmake --build .
+          cmake --build . --verbose
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
@@ -144,7 +144,7 @@ jobs:
             mkdir build
             cd build
             cmake .. -DBLISP_BUILD_CLI=ON -DCMAKE_BUILD_TYPE=Release
-            cmake --build . -j2
+            cmake --build . -j2 --verbose
             cp ./tools/blisp/blisp "/artifacts/${artifact_name}"
             echo "Produced artifact at /artifacts/${artifact_name}"
 
@@ -168,7 +168,7 @@ jobs:
           mkdir build
           cd build
           cmake .. -DBLISP_BUILD_CLI=ON -DCOMPILE_TESTS=ON
-          cmake --build .
+          cmake --build . --verbose
       - name: Run unit tests
         run: |
           cd build
