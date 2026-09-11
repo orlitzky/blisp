@@ -14,6 +14,11 @@ else()
 
     target_include_directories(blisp PRIVATE
         "${CMAKE_SOURCE_DIR}/vendor/argtable3/src")
+
+    # find_package(Argtable3) will pick up -lm from argtable3's .pc
+    # file, but we need to supply it manually when linking directly
+    # against the bundled library.
+    target_link_libraries(blisp PRIVATE m)
 endif()
 
 target_include_directories(blisp PRIVATE
